@@ -34,13 +34,21 @@ async function run(): Promise<void> {
             core.info(`PR title or commits information is missing`)
         }
 
+        let error_message = '';
         results.forEach(message => {
+            error_message += message + '\n\n';
             core.setFailed(message)
         })
+        if (error_message != '') {
+            core.setOutput('error_message', error_message);
+        }
     } catch (error: any) {
         core.error(error);
 
-        if (error instanceof Error) core.setFailed(error.message);
+        if (error instanceof Error) {
+            core.setFailed(error.message);
+            core.setOutput('error_message', error.message);
+        }
     }
 }
 

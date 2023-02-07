@@ -93,3 +93,73 @@ The local branch validator can be manually triggered on repositories that use th
 ```shell
 node_modules/.bin/branch-validator
 ```
+
+## Outputs
+
+In case the validation fails, this action will populate the `error_message` ouput.
+
+[An output can be used in other steps](https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs), for example to comment the error message onto the pull request.
+
+<details>
+<summary>Example</summary>
+
+```yml
+name: "Code Analysis"
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: octokit/request-action@v2.x
+        id: get_pr_commits
+        with:
+          route: GET /repos/{owner}/{repo}/pulls/{pull_number}/commits
+          owner: worksome
+          repo: platform
+          pull_number: ${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate JIRA branch name and PR/commit consistency
+        uses: worksome/jira-branch-name-validator-action@v2.0.0
+        id: validate_pr_commits        
+        with:
+          branch-name: ${{ github.event.pull_request.head.ref }}
+          pr-title: ${{ github.event.pull_request.title }}
+          commits: ${{ steps.get_pr_commits.outputs.data }}
+          prefix: JIRA
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        # When the previous steps fails, the workflow would stop. By adding this
+        # condition you can continue the execution with the populated error message.
+        if: always() && (steps.validate_pr_commits.outputs.error_message != null)
+        with:
+          header: pr-commits-lint-error
+          message: |
+            Hey there and thank you for opening this pull request! 👋🏼
+            
+            We require branch names and commit messages to be linked with the Jira-ID for your PR.
+
+            Details:
+            
+            ```
+            ${{ steps.validate_pr_commits.outputs.error_message }}
+            ```
+
+      # Delete a previous comment when the issue has been resolved
+      - if: ${{ steps.validate_pr_commits.outputs.error_message == null }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:   
+          header: pr-commits-lint-error
+          delete: true
+```
+
+</details>

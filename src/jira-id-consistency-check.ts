@@ -6,7 +6,7 @@ export default function (jiraId: string, prTitle: string, commits: string): stri
     }
 
     JSON.parse(commits).filter(c => c.commit.message.search(jiraId) < 0).forEach(c => {
-        result.push(`Commit message <${c.commit.message}> does not contain Jira ID inferred from branch name, ${jiraId}`)
+        result.push(`Commit message does not contain Jira ID ${jiraId} inferred from branch name. \n______________________________\n${c.commit.message} \n______________________________`);
     })
 
     return result

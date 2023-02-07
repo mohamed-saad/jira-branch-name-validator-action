@@ -2757,14 +2757,21 @@ function run() {
             else {
                 core.info(`PR title or commits information is missing`);
             }
+            let error_message = '';
             results.forEach(message => {
-                core.setFailed(message);
-            });
+                error_message += message + '\n\n';
+                core.setFailed(message)
+            })
+            if (error_message != '') {
+                core.setOutput('error_message', error_message);
+            }
         }
         catch (error) {
             core.error(error);
-            if (error instanceof Error)
+            if (error instanceof Error) {
                 core.setFailed(error.message);
+                core.setOutput('error_message', error.message);
+            }
         }
     });
 }
@@ -2785,7 +2792,7 @@ function default_1(jiraId, prTitle, commits) {
         result.push(`PR title <${prTitle}> does not contain Jira ID inferred from branch name, ${jiraId}`);
     }
     JSON.parse(commits).filter(c => c.commit.message.search(jiraId) < 0).forEach(c => {
-        result.push(`Commit message <${c.commit.message}> does not contain Jira ID inferred from branch name, ${jiraId}`);
+        result.push(`Commit message does not contain Jira ID ${jiraId} inferred from branch name. \n______________________________\n${c.commit.message} \n______________________________`);
     });
     return result;
 }
