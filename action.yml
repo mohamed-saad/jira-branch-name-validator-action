@@ -13,6 +13,9 @@ inputs:
   prefix:
     description: The Jira project prefix.
     default: 'JIRA'
+  conventional-check:
+    description: Enable branch Conventional Commits specification checks
+    default: 'no'    
 runs:
   using: 'node16'
   main: 'dist/github/index.js'

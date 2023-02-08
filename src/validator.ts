@@ -1,6 +1,23 @@
-export default function (branchName: string, prefix: string): [string, string[]] {
+export default function (branchName: string, prefix: string, conventionalCheck: string): [string, string[]] {
 
     let result: string[] = []
+
+    if (conventionalCheck == 'yes') {
+        let isPresent = false;
+        // source: https://github.com/commitizen/conventional-commit-types/blob/master/index.json
+        const defaultTypes = ['feat','fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'];
+        for (var key in defaultTypes) {
+          let typePrefix = defaultTypes[key]+"/"
+          if (branchName.startsWith(typePrefix)) {
+            isPresent = true;
+            branchName = branchName.substring(typePrefix.length)
+            break;
+          }
+        }
+        if (!isPresent) {
+            result.push(`Branch doesn't start with valid type prefix. Expected types are ${defaultTypes.join(', ')}`)
+        }
+    }
 
     if (!branchName.startsWith(prefix)) {
         result.push(`Branch doesn't start with \`${prefix}\` prefix, found ${branchName}.`)

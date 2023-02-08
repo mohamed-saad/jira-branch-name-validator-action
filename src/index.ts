@@ -8,13 +8,14 @@ async function run(): Promise<void> {
         let prTitle = core.getInput('pr-title')
         let commits = core.getInput('commits')
         let prefix = core.getInput('prefix')
+        let conventionalCheck = core.getInput('conventional-check')
 
         let prValidation = (prTitle.length > 0 && commits.length > 0)
 
         core.info(`Received the following branch name: ${branchName}.`)
         core.info(`The format should be \`${prefix}-123_fixing-bug\`.`)
 
-        let [jiraId, results] = validateBranchName(branchName, prefix)
+        let [jiraId, results] = validateBranchName(branchName, prefix, conventionalCheck)
 
         core.info(`Extracted the following JIRA ID from branch name: ${jiraId}`)
 

@@ -5,7 +5,7 @@ import validateBranchName from './validator';
 
 async function run(): Promise<void> {
     const branchName = await getCurrentBranch();
-    const [, results] = validateBranchName(branchName, 'JIRA');
+    const [, results] = validateBranchName(branchName, 'JIRA', 'no');
 
     results.forEach(message => {
         console.log(message);

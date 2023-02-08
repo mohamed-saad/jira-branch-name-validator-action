@@ -24,6 +24,12 @@ The same code is npm-packaged and used for local pre-commit validation of the br
 
 ***
 
+### `conventional-check`
+
+**Optional** Enable conventional checks on branch name (default is `no`).
+
+***
+
 ## Example usage
 
 ```
@@ -93,6 +99,19 @@ The local branch validator can be manually triggered on repositories that use th
 ```shell
 node_modules/.bin/branch-validator
 ```
+
+## Conventional Commits Checks
+
+If you want to ensure your branch name matches the [Conventional Commits spec](https://www.conventionalcommits.org/). The full list of the valid type names is defined here [Conventional Commit Types](https://github.com/commitizen/conventional-commit-types). With this feature activated, a branch must start with one of these types as in the example below:
+
+```
+feat/JIRA-123: Add `Button` component.
+^    ^         ^
+|    |         |__ Subject
+|    |____________ Jira ID
+|_________________ Type
+```
+
 
 ## Outputs
 
