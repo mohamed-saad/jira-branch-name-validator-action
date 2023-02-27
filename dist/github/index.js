@@ -2742,7 +2742,9 @@ function run() {
             let conventionalCheck = core.getInput('conventional-check');
             let prValidation = (prTitle.length > 0 && commits.length > 0);
             core.info(`Received the following branch name: ${branchName}.`);
-            core.info(`The format should be \`${prefix}-123_fixing-bug\`.`);
+            if (prefix.length > 0) {
+                core.info(`The format should be \`${prefix}-123_fixing-bug\`.`);
+            }
             let [jiraId, results] = (0, validator_1.default)(branchName, prefix, conventionalCheck);
             core.info(`Extracted the following JIRA ID from branch name: ${jiraId}`);
             if (prValidation) {
@@ -2823,17 +2825,19 @@ function default_1(branchName, prefix, conventionalCheck) {
             }
         }
         if (!isPresent) {
-            result.push(`Branch doesn't start with valid type prefix. Expected types are ${defaultTypes.join(', ')}`);
+            result.push(`Branch doesn't start with valid type. Expected types are ${defaultTypes.join(', ')}`);
         }
     }
-    if (!branchName.startsWith(prefix)) {
-        result.push(`Branch doesn't start with \`${prefix}\` prefix, found ${branchName}.`);
+    const separator = branchName.indexOf("-");
+    if (separator < 0) {
+        result.push(`Can't extract the Jira project name from the branch name, found ${branchName}.`);
     }
-    branchName = branchName.substring(prefix.length);
-    if (!branchName.startsWith('-')) {
-        result.push(`Separator after prefix is not \`-\`, found ${branchName.substring(0, 1)}.`);
+    else {
+        if (prefix.length == 0) {
+            prefix = branchName.substring(0, separator);
+        }
+        branchName = branchName.substring(separator + 1);
     }
-    branchName = branchName.substring(1);
     let matches = branchName.match(/^\d*/);
     const rawJiraId = matches ? matches[0] : '0';
     const jiraId = parseInt(rawJiraId);

@@ -12,7 +12,7 @@ inputs:
     required: true
   prefix:
     description: The Jira project prefix.
-    default: 'JIRA'
+    default: ''
   conventional-check:
     description: Enable branch Conventional Commits specification checks
     default: 'no'    
