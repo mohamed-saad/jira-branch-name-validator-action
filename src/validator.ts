@@ -22,7 +22,7 @@ export default function (branchName: string, prefix: string, conventionalCheck: 
 
     const separator = branchName.indexOf("-");
     if (separator < 0){
-        result.push(`Can't extract the Jira project name from the branch name, found ${branchName}.`) 
+        result.push(`Can't extract the Jira project name from the branch name, found this as the branch name "${branchName}".`)
     } else {
         if (prefix.length == 0) {
             prefix = branchName.substring(0, separator)
@@ -39,26 +39,26 @@ export default function (branchName: string, prefix: string, conventionalCheck: 
         result.push(`Can't recognize the JIRA id in this part of the branch name "${branchName}".`)
     } else {    
         if (isNaN(jiraId) || jiraId === 0) {
-            result.push(`JIRA id is not a positive number, found ${rawJiraId}.`)
+            result.push(`JIRA id is not a positive number, found "${rawJiraId}".`)
         }
         if (rawJiraId.length !== jiraId.toString().length) {
-            result.push(`JIRA id has leading zeros, found ${rawJiraId}.`)
+            result.push(`JIRA id has leading zeros, found "${rawJiraId}".`)
         }
 
         branchName = branchName.substring(rawJiraId.length)
         if (!/^[\-_]/.test(branchName)) {
-            result.push(`Separator after JIRA id is not \`_\` or \`-\`, found ${branchName.substring(0, 1)}.`)
+            result.push(`Separator after JIRA id is not \`_\` or \`-\`, looking now into this part "${branchName.substring(0, 1)}" in the branch name.`)
         }
     }
 
 
     branchName = branchName.substring(1)
     if (!/^[a-z0-9\-_]+$/.test(branchName)) {
-        result.push(`Description after JIRA id should be all in small letters and use hyphen or underscore as word separator, found ${branchName}.`)
+        result.push(`Description after JIRA id should be all in small letters and use hyphen or underscore as word separator, looking now into this part "${branchName}" in the branch name.`)
     }
 
     if (branchName.length > 100) {
-        result.push(`Description after JIRA id has to be shorter than 100 characters, found ${branchName}.`)
+        result.push(`Description after JIRA id has to be shorter than 100 characters, found this as the branch name "${branchName}".`)
     }
 
     return [`${prefix}-${jiraId}`, result]
